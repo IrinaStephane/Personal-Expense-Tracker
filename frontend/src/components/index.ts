@@ -1,0 +1,1 @@
+export { default as IncomeList } from "./Income/IncomeList";
