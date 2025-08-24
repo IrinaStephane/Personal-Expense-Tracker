@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+// MODELS
+
+
+// 👤 Utilisateur
+model User {
+  id         Int        @id @default(autoincrement())
+  name       String
+  email      String     @unique
+  password   String
+  createdAt  DateTime   @default(now())
+
+  // Relations
+  expenses   Expense[]
+  incomes    Income[]
+  categories Category[]
+}
+
+// 💸 Dépense
+model Expense {
+  id          Int        @id @default(autoincrement())
+  amount      Float
+  description String?
+  type        ExpenseType @default(ONE_TIME)
+  date        DateTime?
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime    @default(now())
+
+  // Relations
+  userId     Int
+  user       User        @relation(fields: [userId], references: [id])
+
+  categoryId Int
+  category   Category    @relation(fields: [categoryId], references: [id])
+
+  receipt    Receipt?
+}
+
+// 📂 Catégorie
+model Category {
+  id      Int       @id @default(autoincrement())
+  name    String
+  userId  Int
+  user    User      @relation(fields: [userId], references: [id])
+  expenses Expense[]
+}
+
+// 📎 Reçu (upload fichier)
+model Receipt {
+  id        Int     @id @default(autoincrement())
+  filePath  String
+  uploadedAt DateTime @default(now())
+
+  // Relation
+  expenseId Int      @unique
+  expense   Expense  @relation(fields: [expenseId], references: [id])
+}
+
+// 💰 Revenus
+model Income {
+  id          Int      @id @default(autoincrement())
+  amount      Float
+  source      String
+  description String?
+  date        DateTime
+  createdAt   DateTime @default(now())
+
+  // Relation
+  userId Int
+  user   User    @relation(fields: [userId], references: [id])
+}
+
+// ENUMS
+
+// Type de dépense
+enum ExpenseType {
+  ONE_TIME
+  RECURRING
+}
