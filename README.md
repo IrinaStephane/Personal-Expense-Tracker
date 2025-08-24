@@ -7,7 +7,7 @@ A full-stack web application that enables users to track personal expenses and i
 | Frontend | Backend | Base de données | Outils |
 |----------|--------|-----------------|--------|
 | React + Vite | Express.js | PostgreSQL | Tailwind CSS |
-| React Router | Node.js | Prisma | Typescrit |
+| React Router | Node.js | Prisma | Typescript |
 | Axios | Multer (upload fichiers) |  | JWT (authentification) |
 
 ---
