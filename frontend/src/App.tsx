@@ -1,9 +1,11 @@
-import React from 'react';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import AuthForm from './components/Auth/AuthForm';
-import Header from './Layout/Header';
 
-const MainApp: React.FC = () => {
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import Header from './Layout/Header';
+import Register from './components/Auth/Register';
+import Login from './components/Auth/Login';
+
+const MainApp = () => {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
@@ -14,21 +16,34 @@ const MainApp: React.FC = () => {
     );
   }
 
-  if (!user) {
-    return <AuthForm />;
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-    </div>
+    <Routes>
+      {/* Si l'utilisateur n'est pas connecté */}
+      {!user ? (
+        <>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          {/* Redirection par défaut vers /login */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </>
+      ) : (
+        <>
+          {/* Si l'utilisateur est connecté */}
+          <Route path="/" element={<Header />} />
+          {/* Redirection par défaut vers / */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </>
+      )}
+    </Routes>
   );
 };
 
 function App() {
   return (
     <AuthProvider>
-      <MainApp />
+      <BrowserRouter>
+        <MainApp />
+      </BrowserRouter>
     </AuthProvider>
   );
 }

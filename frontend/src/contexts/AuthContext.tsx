@@ -5,7 +5,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string, name: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -31,10 +31,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     if (token) {
-      // Simulate user validation - in real app, verify token with backend
+      // Simuler une validation du token
       setUser({
         id: '1',
         email: 'user@example.com',
+        name: 'Demo User', // on ajoute le nom aussi
         createdAt: new Date().toISOString()
       });
     }
@@ -44,14 +45,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Simulate API call
+      // Simulation API
       const mockToken = 'mock-jwt-token';
       const mockUser: User = {
         id: '1',
         email,
+        name: 'Existing User',
         createdAt: new Date().toISOString()
       };
-      
+
       localStorage.setItem('token', mockToken);
       setToken(mockToken);
       setUser(mockUser);
@@ -62,17 +64,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const signup = async (email: string, password: string) => {
+  const signup = async (email: string, password: string, name: string) => {
     setIsLoading(true);
     try {
-      // Simulate API call
+      // Simulation API
       const mockToken = 'mock-jwt-token';
       const mockUser: User = {
         id: '1',
         email,
+        name, // ici on enregistre le nom
         createdAt: new Date().toISOString()
       };
-      
+
       localStorage.setItem('token', mockToken);
       setToken(mockToken);
       setUser(mockUser);
