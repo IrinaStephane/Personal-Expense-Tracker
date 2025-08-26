@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { User } from '../types';
+import { login as apiLogin, register as apiRegister } from '../api/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -29,13 +30,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [isLoading, setIsLoading] = useState(true);
 
+  // Vérifie le token au démarrage
   useEffect(() => {
     if (token) {
-      // Simuler une validation du token
+      // Ici tu pourrais décoder le JWT pour récupérer l'user réel
+      // Pour simplifier, on stocke le token et un user minimal
       setUser({
-        id: '1',
-        email: 'user@example.com',
-        name: 'Demo User', // on ajoute le nom aussi
+        id: '', // tu peux récupérer depuis le JWT
+        name: '',
+        email: '',
         createdAt: new Date().toISOString()
       });
     }
@@ -45,20 +48,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Simulation API
-      const mockToken = 'mock-jwt-token';
-      const mockUser: User = {
-        id: '1',
-        email,
-        name: 'Existing User',
-        createdAt: new Date().toISOString()
-      };
-
-      localStorage.setItem('token', mockToken);
-      setToken(mockToken);
-      setUser(mockUser);
-    } catch (error) {
-      throw new Error('Login failed');
+      const res = await apiLogin(email, password);
+      if (res.token) {
+        localStorage.setItem('token', res.token);
+        setToken(res.token);
+        setUser(res.user);
+      } else {
+        throw new Error(res.message || 'Login failed');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -67,21 +64,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signup = async (email: string, password: string, name: string) => {
     setIsLoading(true);
     try {
-      // Simulation API
-      const mockToken = 'mock-jwt-token';
-      const mockUser: User = {
-        id: '1',
-        email,
-        name, // ici on enregistre le nom
-        createdAt: new Date().toISOString()
-      };
-
-      localStorage.setItem('token', mockToken);
-      setToken(mockToken);
-      setUser(mockUser);
-    } catch (error) {
-      throw new Error('Signup failed');
-    } finally {
+      const res = await apiRegister(name, email, password);
+      if (!res.userId) {
+        throw new Error(res.message || 'Signup failed');
+    } }finally {
       setIsLoading(false);
     }
   };
@@ -92,14 +78,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null);
   };
 
-  const value = {
-    user,
-    token,
-    login,
-    signup,
-    logout,
-    isLoading
-  };
+  const value = { user, token, login, signup, logout, isLoading };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

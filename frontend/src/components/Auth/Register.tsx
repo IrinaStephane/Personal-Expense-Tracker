@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, CreditCard } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Register: React.FC = () => {
   const [name, setName] = useState('');
@@ -9,12 +10,14 @@ const Register: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const { signup, isLoading } = useAuth();
+  const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     try {
       await signup(email, password, name); // ⚠️ adapter selon ton AuthContext
+      navigate('/login')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }

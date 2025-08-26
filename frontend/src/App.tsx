@@ -2,8 +2,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Header from './Layout/Header';
-import Register from './components/Auth/Register';
-import Login from './components/Auth/Login';
+import { Login, Register } from './components';
+
 
 const MainApp = () => {
   const { user, isLoading } = useAuth();
